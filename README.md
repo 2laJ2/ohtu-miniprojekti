@@ -16,6 +16,7 @@ Ohtu-miniprojekti
 
 [Product backlog](https://github.com/brontto/ohtu-miniprojekti/projects/1)
 
+[Loppuraportti](https://docs.google.com/document/d/1VwHhSXfaDF7HMjNcPluxqwuz0yLMjX78Z1BK_nNxKtE/edit?usp=sharing)
 
 ## Heroku 
 [Heroku App](https://damp-dawn-78777.herokuapp.com/)
@@ -31,7 +32,7 @@ Salaisen avaimen luominen onnistuu esim. Python-tulkissa komennoilla
 import secrets
 secrets.token_hex(16)
 ```
-- Alusta tietokanta komennolla `poetry run python3 src/initialize_database.py`
+- Alusta tietokanta komennolla `poetry run invoke initialize`
 - Käynnistä sovellus komennolla `poetry run invoke start`
 
 PostgreSQL:n asennus on suositeltavaa tehdä pääkäyttäjän oikeuksilla. Asennus onnistuu myös ilman pääkäyttäjän oikeuksia, mutta sovelluksen toiminnassa PostgreSQL:n kanssa voi joillain käyttäjillä olla ongelmia.
@@ -55,4 +56,4 @@ poetry run invoke test
 
 Hyväksymistesteissä [(src/tests/robot)](https://github.com/brontto/ohtu-miniprojekti/tree/main/src/tests/robot) käytetään Robot Frameworkia.
 
-Käynnistä testien suorittamista varten Flask-palvelin komennolla `poetry run dotenv -f .env.test run -- python3 src/index.py`. Suorita testit toisessa terminaali-ikkunassa komennolla `poetry run robot src/tests/robot`.  
+Käynnistä testien suorittamista varten Flask-palvelin komennolla `poetry run invoke robot-start`. Suorita testit toisessa terminaali-ikkunassa komennolla `poetry run invoke robot-test`.  

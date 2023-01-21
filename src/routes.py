@@ -1,4 +1,4 @@
-from flask import request, redirect, render_template
+from flask import request, redirect, render_template, session
 from vinkkikirjasto import Vinkkikirjasto
 from kayttajat import Kayttajat
 from app import app
@@ -10,8 +10,9 @@ kayttajat = Kayttajat()
 @app.route("/luo_vinkki", methods=["POST"])
 def luo_vinkki():
     otsikko = request.form["otsikko"]
-    url = "http://" + request.form["url"]
-    vinkkikirjasto.lisaa_uusi_vinkki(otsikko, url)
+    url = request.form["url"]
+    kayttaja_id = session.get("kayttaja_id", 0)
+    vinkkikirjasto.lisaa_uusi_vinkki(otsikko, url, kayttaja_id)
     return redirect("/lukuvinkit")
 
 @app.route("/kirjautuminen", methods=["POST"])
@@ -19,11 +20,13 @@ def kirjautuminen():
     tunnus = request.form["kayttajatunnus"]
     salasana = request.form["salasana"]
 
-    if not kayttajat.kirjaudu_sisaan(tunnus, salasana):
+    kayttaja = kayttajat.kirjaudu_sisaan(tunnus, salasana)
+    if not kayttaja:
         error = "Käyttäjätunnus tai salasana väärin"
         return render_etusivu(error)
 
-    kayttajat.aseta_sessio(tunnus)
+    kayttaja_id = kayttaja.id
+    kayttajat.aseta_sessio(tunnus, kayttaja_id)
 
     return redirect("/lukuvinkit")
 
@@ -42,6 +45,10 @@ def luo_uusi_kayttaja():
     salasana = request.form["salasana"]
     salasana2 = request.form["salasana_varmistus"]
 
+    if not salasana:
+        error = "Tarvitset myös salasanan"
+        return render_template("rekisterointi.html", error=error) 
+    
     if not salasana == salasana2:
         error = "Salasanat eivät täsmää"
         return render_template("rekisterointi.html", error=error)
@@ -49,8 +56,11 @@ def luo_uusi_kayttaja():
     if not kayttajat.lisaa_uusi_kayttaja(kayttajatunnus, salasana):
         error = "käyttäjätunnus on jo olemassa"
         return render_template("rekisterointi.html", error=error)
-    kayttajat.kirjaudu_sisaan(kayttajatunnus, salasana)
-    kayttajat.aseta_sessio(kayttajatunnus)
+
+    kayttaja = kayttajat.kirjaudu_sisaan(kayttajatunnus, salasana)
+    kayttaja_id = kayttaja.id
+
+    kayttajat.aseta_sessio(kayttajatunnus, kayttaja_id)
 
     return redirect("/lukuvinkit")
 

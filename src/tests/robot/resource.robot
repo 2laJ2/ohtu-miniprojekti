@@ -11,6 +11,7 @@ ${LOGIN URL}  http://${SERVER}/kirjautuminen
 ${REGISTER URL}  http://${SERVER}/rekisterointi
 ${LUKUVINKIT URL}  http://${SERVER}/lukuvinkit
 ${LOGOUT URL}  http://${SERVER}/kirjaudu_ulos
+${RESET URL}  http://${SERVER}/tyhjenna_tietokannat
 
 *** Keywords ***
 Open And Configure Browser
@@ -18,8 +19,18 @@ Open And Configure Browser
     Maximize Browser Window
     Set Selenium Speed  ${DELAY}
 
+Create User And Go To Main Page
+    Reset Application
+    Logout
+    Create User  keiju  keijusana
+    Go To Main Page
+    Main Page Should Be Open
+
 Main Page Should Be Open
     Title Should Be  Lukuvinkit-etusivu
+
+Reset Application
+    Go To  ${RESET URL}
 
 Go To Main Page
     Go To  ${HOME URL}
